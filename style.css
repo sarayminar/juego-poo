@@ -1,0 +1,47 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    background-color: #AB886D;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+  }
+  
+  #game-container {
+    position: relative;
+    width: 800px;
+    height: 400px;
+    margin: 20px auto;
+    border: 10px solid #493628;
+    background-image:url(./img/background.jpg);
+    overflow: hidden;
+    border-radius: 30px;
+  }
+  
+  #puntos { 
+    font-size: 20px;
+    text-align: center; 
+    margin: 10px 0;
+   }
+
+  .personaje {
+    background-image: url(./img/gom.png);
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    width: 60px;
+    height: 70px;
+    
+  }
+  
+  .moneda {
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-image: url(./img/chikin.png);
+  }
