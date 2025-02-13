@@ -6,14 +6,20 @@
     <title>Nini Bear</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="./img/favicon.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Emilys+Candy&family=Playwrite+US+Modern:wght@100..400&display=swap" rel="stylesheet">  
 
   </head>
   <body>
-    <h1>Nini Bear</h1>
-    <div id="puntos">Puntos: 0</div>
-    <button id="toggle-sound">Sonido</button>
+    <h1 class="title">Nini Bear</h1>
+    <div class="container">
+      <div id="puntos" class="score">Score: 0</div>
+      <img src="./img/favicon.png" class="img" alt="osito">
+      <button id="toggle-sound" class="sound-button">BACKGROUND MUSIC: ON</button>
+    </div>
+    
     <div id="game-container"></div>
     <script type="module" src="main.js"></script>
+    <p class="instructions">Atrapa tantas 🍗 como puedas pero, ¡atento!, si tocas un 💼 perderás y el juego se reiniciará... </p>
     
   </body>
 </html>

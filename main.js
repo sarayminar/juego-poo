@@ -1,12 +1,11 @@
-// Clase principal del juego, contiene la lógica de puntuación, creación de monedas y maletines
+
+// Clase principal del juego, contiene la lógica de puntuación, creación de comida y maletines
 class Game {
     constructor() {
         this.container = document.getElementById("game-container");
         this.personaje = null;
         this.monedas = [];
         this.maletines = [];
-        this.coinSound = new Audio("sounds/eat.mp3");
-        this.coinSound.volume = 0.05;
         this.puntuacion = 0;
         this.crearEscenario(); 
         this.agregarEventos(); 
@@ -17,13 +16,19 @@ class Game {
         this.audio.play();
         this.toggleButton = document.getElementById("toggle-sound");
         this.toggleButton.addEventListener("click", () => this.toggleSound());
+        this.coinSound = new Audio("sounds/eat.mp3");
+        this.coinSound.volume = 0.05;
+        this.maletinSound = new Audio("sounds/game-over.mp3");
+        this.maletinSound.volume = 0.05;
     }
 
     toggleSound() {
         if (this.audio.paused) {
             this.audio.play();  
+            this.toggleButton.textContent = "BACKGROUND MUSIC: ON"; 
         } else {
             this.audio.pause();  
+            this.toggleButton.textContent = "BACKGROUND MUSIC: OFF"; 
         }
     }
 
@@ -51,7 +56,6 @@ class Game {
         this.checkColisiones(); // 
     }
 
-    
     // Revisa las colisiones entre el personaje y monedas/maletines
     checkColisiones() {
         setInterval(() => {
@@ -69,25 +73,28 @@ class Game {
 
             this.maletines.forEach((maletin, index) => {
                 if (this.personaje.colisionaCon(maletin)) {
-                    // Resetear puntuación
-                    this.puntuacion = 0;
-                    this.puntosElement.textContent = `Puntos: ${this.puntuacion}`; 
-            
-                    // Hacer que el personaje vuelva a su posición inicial
-                    this.personaje.x = 50; // Posición inicial en X
-                    this.personaje.y = 300; // Posición inicial en Y
-                    this.personaje.actualizarPosicion(); // Actualiza la posición en pantalla
-            
-                    // Mostrar alerta
-                    alert("¡Perdiste!");
-                    alert("Tendrás que intentarlo otra vez...")
-            
-                    // Eliminar el maletín de la pantalla
-                    this.container.removeChild(maletin.element);
-                    this.maletines.splice(index, 1);
+                    this.maletinSound.play();
+                    setTimeout(() => {
+                        alert("¡Perdiste!😭");
+                        alert("Tendrás que intentarlo otra vez...😮‍💨");
+                        
+                        // Resetear puntuación
+                        this.puntuacion = 0;
+                        this.puntosElement.textContent = `Puntos: ${this.puntuacion}`; 
+
+                        // Hacer que el personaje vuelva a su posición inicial
+                        this.personaje.x = 50; 
+                        this.personaje.y = 300; 
+                        this.personaje.actualizarPosicion(); 
+
+                        // Eliminar todos los maletines
+                        this.maletines.forEach((maletin) => {
+                            this.container.removeChild(maletin.element);
+                        });
+                        this.maletines = []; // Vaciar el array de maletines
+                    }, 100);
                 }
             });
-            
         }, 100);
     }
 
@@ -129,7 +136,6 @@ class Personaje {
         else if (evento.key === "ArrowLeft" && this.x - this.velocidad >= 0) { 
             this.x -= this.velocidad;
         }
-        
         else if (evento.key === "ArrowUp" && !this.saltando) {
             this.saltar();
         }
@@ -167,7 +173,7 @@ class Personaje {
     // Maneja la caída del personaje cuando no está saltando
     caer() {
         let contenedorHeight = document.getElementById("game-container").offsetHeight;  
-        let suelo = contenedorHeight - this.height -65; // Posición del suelo
+        let suelo = contenedorHeight - this.height - 65; // Posición del suelo
     
         this.cayendo = true;
         this.intervaloGravedad = setInterval(() => {
@@ -220,7 +226,7 @@ class Moneda {
     }
 }
 
-// Clase que hereda de Moneda y representa el maletín, tiene tamaño diferente y clase distinta
+// Clase del maletín
 class Maletin extends Moneda {
     constructor() {
         super();
