@@ -15,8 +15,6 @@ class Game {
         this.audio.loop = true;  
         this.audio.volume = .1;  
         this.audio.play();
-
-
         this.toggleButton = document.getElementById("toggle-sound");
         this.toggleButton.addEventListener("click", () => this.toggleSound());
     }
@@ -53,9 +51,7 @@ class Game {
         this.checkColisiones(); // 
     }
 
-    reiniciarContador(){
-
-    }
+    
     // Revisa las colisiones entre el personaje y monedas/maletines
     checkColisiones() {
         setInterval(() => {
@@ -73,11 +69,25 @@ class Game {
 
             this.maletines.forEach((maletin, index) => {
                 if (this.personaje.colisionaCon(maletin)) {
+                    // Resetear puntuación
+                    this.puntuacion = 0;
+                    this.puntosElement.textContent = `Puntos: ${this.puntuacion}`; 
+            
+                    // Hacer que el personaje vuelva a su posición inicial
+                    this.personaje.x = 50; // Posición inicial en X
+                    this.personaje.y = 300; // Posición inicial en Y
+                    this.personaje.actualizarPosicion(); // Actualiza la posición en pantalla
+            
+                    // Mostrar alerta
+                    alert("¡Perdiste!");
+                    alert("Tendrás que intentarlo otra vez...")
+            
+                    // Eliminar el maletín de la pantalla
                     this.container.removeChild(maletin.element);
                     this.maletines.splice(index, 1);
-                    this.actualizarPuntuacion(5); 
                 }
             });
+            
         }, 100);
     }
 
