@@ -5,14 +5,28 @@ class Game {
         this.personaje = null;
         this.monedas = [];
         this.maletines = [];
+        this.coinSound = new Audio("sounds/eat.mp3");
+        this.coinSound.volume = 0.05;
         this.puntuacion = 0;
-        this.crearEscenario(); // Inicializa el escenario, personaje y monedas
-        this.agregarEventos();  // Añade los eventos de movimiento y colisiones
-        this.puntosElement = document.getElementById("puntos");  // Elemento de visualización de puntuación
+        this.crearEscenario(); 
+        this.agregarEventos(); 
+        this.puntosElement = document.getElementById("puntos"); 
         this.audio = new Audio("sounds/background-music.mp3"); 
         this.audio.loop = true;  
         this.audio.volume = .1;  
         this.audio.play();
+
+
+        this.toggleButton = document.getElementById("toggle-sound");
+        this.toggleButton.addEventListener("click", () => this.toggleSound());
+    }
+
+    toggleSound() {
+        if (this.audio.paused) {
+            this.audio.play();  
+        } else {
+            this.audio.pause();  
+        }
     }
 
     // Crea el escenario inicial con el personaje y las primeras monedas
@@ -36,30 +50,32 @@ class Game {
     // Agrega los eventos necesarios (como los movimientos del personaje)
     agregarEventos() {
         window.addEventListener("keydown", (e) => this.personaje.mover(e));
-        this.checkColisiones(); // Llama a la función para comprobar colisiones
+        this.checkColisiones(); // 
     }
 
+    reiniciarContador(){
+
+    }
     // Revisa las colisiones entre el personaje y monedas/maletines
     checkColisiones() {
         setInterval(() => {
             this.monedas.forEach((moneda, index) => {
                 if (this.personaje.colisionaCon(moneda)) {
-                    // Si colisiona con una moneda, la elimina y genera una nueva
+                    this.coinSound.play();
                     this.container.removeChild(moneda.element);
                     this.monedas.splice(index, 1);
                     const nuevaMoneda = new Moneda();
                     this.monedas.push(nuevaMoneda);
                     this.container.appendChild(nuevaMoneda.element);
-                    this.actualizarPuntuacion(1); // Suma 1 punto por cada moneda
+                    this.actualizarPuntuacion(1); 
                 }
             });
 
             this.maletines.forEach((maletin, index) => {
                 if (this.personaje.colisionaCon(maletin)) {
-                    // Si colisiona con un maletín, lo elimina y suma 5 puntos
                     this.container.removeChild(maletin.element);
                     this.maletines.splice(index, 1);
-                    this.actualizarPuntuacion(5); // Suma 5 puntos por cada maletín
+                    this.actualizarPuntuacion(5); 
                 }
             });
         }, 100);
@@ -152,7 +168,7 @@ class Personaje {
                 this.intervaloGravedad = null;
                 this.cayendo = false;
                 this.puedeSaltarEnAire = true; 
-                this.y = suelo; // Asegura que el personaje quede en el suelo
+                this.y = suelo; 
             }
             this.actualizarPosicion();
         }, 20);
@@ -198,10 +214,10 @@ class Moneda {
 class Maletin extends Moneda {
     constructor() {
         super();
-        this.width = 40; // Tamaño del maletín
+        this.width = 40; 
         this.height = 40;
-        this.element.classList.remove("moneda"); // Remueve la clase "moneda"
-        this.element.classList.add("maletin"); // Añade la clase "maletin"
+        this.element.classList.remove("moneda"); 
+        this.element.classList.add("maletin");
         this.actualizarPosicion();
     }
 }
