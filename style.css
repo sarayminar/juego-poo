@@ -45,3 +45,12 @@ body {
     height: 50px;
     background-image: url(./img/chikin.png);
   }
+
+  .maletin{
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-image: url(./img/maletin.png);
+  }
