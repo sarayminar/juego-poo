@@ -1,5 +1,5 @@
 
-// Clase principal del juego, contiene la lógica de puntuación, creación de comida y maletines
+// Clase principal del juego. Contiene la lógica de puntuación, creación de monedas(comida) y maletines, los efectos de sonido, la puntuación 0.
 class Game {
     constructor() {
         this.container = document.getElementById("game-container");
@@ -10,6 +10,8 @@ class Game {
         this.crearEscenario(); 
         this.agregarEventos(); 
         this.puntosElement = document.getElementById("puntos"); 
+
+        // EFECTOS DE SONIDO
         this.audio = new Audio("sounds/background-music.mp3"); 
         this.audio.loop = true;  
         this.audio.volume = .1;  
@@ -22,6 +24,7 @@ class Game {
         this.maletinSound.volume = 0.05;
     }
 
+    // Funcionamiento del boton
     toggleSound() {
         if (this.audio.paused) {
             this.audio.play();  
@@ -32,10 +35,11 @@ class Game {
         }
     }
 
-    // Crea el escenario inicial con el personaje y las primeras monedas
+    // Crea el escenario inicial con el personaje y las primeras monedas (comida)
     crearEscenario() {
-        this.personaje = new Personaje();
-        this.container.appendChild(this.personaje.element);
+        this.personaje = new Personaje(); //Creamos un personaje nuevo
+        this.container.appendChild(this.personaje.element); //Añadimos el personaje al contenedor del juego
+        //Bucle para crear 5 monedas iniciales y añadirlas al game container
         for (let i = 0; i < 5; i++) {
             const moneda = new Moneda();
             this.monedas.push(moneda);
@@ -43,23 +47,24 @@ class Game {
         }
     }
 
-    // Crea un nuevo maletín y lo agrega al contenedor
+    // Crea un nuevo maletín y lo agrega al game container
     crearMaletin() {
         const maletin = new Maletin();
         this.maletines.push(maletin);
         this.container.appendChild(maletin.element);
     }
 
-    // Agrega los eventos necesarios (como los movimientos del personaje)
+    // Agrega los eventos necesarios (como los movimientos del personaje) con una funcion flecha
     agregarEventos() {
         window.addEventListener("keydown", (e) => this.personaje.mover(e));
-        this.checkColisiones(); // 
+        this.checkColisiones(); 
     }
 
     // Revisa las colisiones entre el personaje y monedas/maletines
     checkColisiones() {
-        setInterval(() => {
-            this.monedas.forEach((moneda, index) => {
+        
+        setInterval(() => { // Comprueba cada 100ms si hay colisiones
+            this.monedas.forEach((moneda, index) => { // Si hay colision con la moneda, reproduce el efecto de sonido, elimina dicha moneda, genera otra e incrementa el contador +1
                 if (this.personaje.colisionaCon(moneda)) {
                     this.coinSound.play();
                     this.container.removeChild(moneda.element);
@@ -71,46 +76,50 @@ class Game {
                 }
             });
 
-            this.maletines.forEach((maletin, index) => {
+            this.maletines.forEach((maletin, index) => { //Si hay colision con el maletin, reproduce el efecto de sonido, elimina dicho maletin, saltan las alertas, resetea el contador y devuelva al personaje a la posicion inicial
                 if (this.personaje.colisionaCon(maletin)) {
                     this.maletinSound.play();
+                    this.container.removeChild(maletin.element);
                     setTimeout(() => {
-                        alert("¡Perdiste!😭");
-                        alert("Tendrás que intentarlo otra vez...😮‍💨");
+                        alert("¡Game over!😭");
+                        alert("You'll have to try again...😮‍💨");
+                        alert("You got this!🫵");
                         
-                        // Resetear puntuación
+                        // Resetea puntuacion
                         this.puntuacion = 0;
                         this.puntosElement.textContent = `Puntos: ${this.puntuacion}`; 
 
-                        // Hacer que el personaje vuelva a su posición inicial
+                        // Devuelve al personaje a la posicion inicial
                         this.personaje.x = 50; 
                         this.personaje.y = 300; 
                         this.personaje.actualizarPosicion(); 
 
-                        // Eliminar todos los maletines
+                        // Elimina los maletines
                         this.maletines.forEach((maletin) => {
                             this.container.removeChild(maletin.element);
                         });
-                        this.maletines = []; // Vaciar el array de maletines
+                        this.maletines = []; // Vacia el array de maletines
                     }, 100);
                 }
             });
         }, 100);
     }
 
-    // Actualiza la puntuación y crea maletines cada 5 monedas después de las primeras 10
+    // Actualiza la puntuacion y crea maletines cada 5 monedas despues de las primeras 10 recolectadas
     actualizarPuntuacion(puntos) {
+
+        // Actualiza puntuación
         this.puntuacion += puntos;
         this.puntosElement.textContent = `Puntos: ${this.puntuacion}`; 
 
-        // Si el jugador ha recogido 10 monedas, crea un maletín cada 5 monedas
+        //Creamos maletines
         if (this.puntuacion >= 10 && (this.puntuacion - 10) % 5 === 0) {
             this.crearMaletin();
         }
     }
 }
 
-// Clase del personaje, maneja su movimiento, salto y caída
+// Clase del personaje en la que definimos sus características, su salto y su caída
 class Personaje {
     constructor() {
         this.x = 50;
@@ -124,28 +133,35 @@ class Personaje {
         this.actualizarPosicion();
     }
 
-    // Maneja el movimiento del personaje con las flechas del teclado
+    // Controla el movimiento del personaje con las flechas del teclado
     mover(evento) {
         evento.preventDefault(); 
 
-        let contenedorWidth = document.getElementById("game-container").offsetWidth;  
+        let contenedorWidth = document.getElementById("game-container").offsetWidth;  // Usamos el ancho del contenedor para evitar que el personaje salga del ancho del contenedor
 
-        if (evento.key === "ArrowRight" && this.x + this.width + this.velocidad <= contenedorWidth) {
+        // Presionando la flecha ->, el personaje se mueve a la dcha pero solo si la nueva posicion no supera el ancho del contenedor
+        if (evento.key === "ArrowRight" && this.x + this.width + this.velocidad <= contenedorWidth) { 
             this.x += this.velocidad;
         } 
-        else if (evento.key === "ArrowLeft" && this.x - this.velocidad >= 0) { 
+        //Presionando la flecha <-, el personaje se mueve a la izqda pero solo si no se sale del contenedor
+        else if (evento.key === "ArrowLeft" && this.x - this.velocidad >= 0) {  
             this.x -= this.velocidad;
         }
+        //Presionando la flecha arriba, el personaje se salta
         else if (evento.key === "ArrowUp" && !this.saltando) {
             this.saltar();
         }
 
+        //Actualiza la posicion del personaje
         this.actualizarPosicion();
     }
 
     // Realiza un salto si el personaje no está saltando ni cayendo
     saltar() {
+
+        // Comprueba si el personaje está cayendo
         if (!this.saltando && (this.puedeSaltarEnAire || !this.cayendo)) {
+            //Si está cayendo detenemos la caida antes de iniciar otro salto
             if (this.cayendo) {
                 this.puedeSaltarEnAire = false;  
                 clearInterval(this.intervaloGravedad); 
@@ -153,9 +169,10 @@ class Personaje {
                 this.cayendo = false;
             }
 
-            this.saltando = true;
+            this.saltando = true; 
             let alturaMaxima = this.y - 170;
 
+            //Creamos un intervalo para que el personaje salte y mientras se mantenga pulsado, cada 20ms ira aumentando el salto hasta alcanzar su tope
             this.intervaloSalto = setInterval(() => {
                 if (this.y > alturaMaxima) {
                     this.y -= 10;
@@ -170,16 +187,18 @@ class Personaje {
         }
     }
 
-    // Maneja la caída del personaje cuando no está saltando
+    // Controlamos la caida y nos aseguramos de que el personaje esta en el suelo
     caer() {
         let contenedorHeight = document.getElementById("game-container").offsetHeight;  
         let suelo = contenedorHeight - this.height - 65; // Posición del suelo
     
         this.cayendo = true;
+        //Creamos un intervalo para que el personaje caiga cuando haya saltado de forma que simule la gravedad (redondeada a 10)
         this.intervaloGravedad = setInterval(() => {
-            if (this.y + 10 < suelo) {
+            //Mientras la posicion y del personaje sea menor que la del suelo  el personaje seguira cayendo
+            if (this.y + 10 < suelo) {  
                 this.y += 10;
-            } else {
+            } else { //Una vez cayo en el suelo
                 clearInterval(this.intervaloGravedad);
                 this.intervaloGravedad = null;
                 this.cayendo = false;
@@ -190,7 +209,7 @@ class Personaje {
         }, 20);
     }
 
-    // Actualiza la posición del personaje en la pantalla
+    // Actualiza la posicion del personaje en la pantalla
     actualizarPosicion() {
         this.element.style.left = `${this.x}px`;  
         this.element.style.top = `${this.y}px`; 
@@ -207,7 +226,7 @@ class Personaje {
     }
 }
 
-// Clase para las monedas, se generan de manera aleatoria en el juego
+// Generacion de monedas de forma aleatoria
 class Moneda {
     constructor() {
         this.x = Math.random() * 700 + 50;
@@ -219,14 +238,14 @@ class Moneda {
         this.actualizarPosicion();
     }
 
-    // Actualiza la posición de la moneda en la pantalla
+    // Actualiza la posicion de la moneda en la pantalla
     actualizarPosicion() {
         this.element.style.left = `${this.x}px`;  
         this.element.style.top = `${this.y}px`; 
     }
 }
 
-// Clase del maletín
+// La clase Maletin a través de la HERENCIA hereda las caracteristicas de la clase Moneda solo que las personaliza
 class Maletin extends Moneda {
     constructor() {
         super();

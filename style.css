@@ -59,7 +59,7 @@ body {
     background-size: cover;
     background-position: center;
     position: absolute;
-    width: 50px;
+    width: 55px;
     height: 50px;
     background-image: url(./img/maletin.png);
   }
@@ -84,4 +84,49 @@ body {
   .instructions{
     color:white;
     font-size: 20px;
+  }
+
+
+
+  /* Vamos hacerlo responsive */
+
+  @media (max-width: 720px){
+    #game-container {
+      width: 80%;
+      border-width: 6px;
+  }
+
+  .title {
+      font-size: 30px;
+      letter-spacing: 5px;
+  }
+
+  .sound-button {
+      font-size: 8px;
+      padding: 3px 10px;
+  }
+
+  #puntos {
+      font-size: 16px;
+  }
+
+  .img {
+      width: 8%;
+  }
+
+  .instructions {
+      font-size: 16px;
+      width: 80%;
+      text-align: center;
+  }
+
+  .personaje {
+      width: 45px;
+      height: 55px;
+  }
+
+  .moneda, .maletin {
+      width: 40px;
+      height: 40px;
+  }
   }
