@@ -81,7 +81,7 @@ class Game {
                     this.maletinSound.play();
                     this.container.removeChild(maletin.element);
                     setTimeout(() => {
-                        alert("¡Game over!😭");
+                        alert(`¡Game over!😭`);
                         alert("You'll have to try again...😮‍💨");
                         alert("You got this!🫵");
                         
